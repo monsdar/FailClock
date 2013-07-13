@@ -1,4 +1,5 @@
 
+
 import datetime
 import serial
 import time
@@ -17,19 +18,16 @@ def main():
     #      this is the case when there aren't any other Serial-devices.
     serialHandle = serial.Serial("COM3", 9600)
 
-    #reset the display
-    #Note: this returns the previous value, we're ignoring it for now
-    #Note: We need to sleep a bit before writing to the device
-    time.sleep(2.0)
-    serialHandle.write("R0000")
-
-    #reset the timer
+    #sync the timer
     #Note: Needs to be done because the serial connection resets the Arduino
     #      It also comes in practical to sync the timer from time to time...
     time.sleep(2.0)
     seconds = getSecondsSinceMidnight()
     secondStr = intTo5DigitString(seconds)
-    serialHandle.write("T" + secondStr)
+    data = "T" + secondStr
+    serialHandle.write(data)
+    print data
 
 if __name__ == "__main__":
     main()
+    
