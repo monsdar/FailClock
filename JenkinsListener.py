@@ -22,7 +22,7 @@ def main():
         #assume that the given data is usable Jenkins code
         try:
             jsonData = json.loads(data)
-            if( jsonData["build"]["status"] == "FAILED" ||
+            if( jsonData["build"]["status"] == "FAILED" or
                 jsonData["build"]["status"] == "FAILURE" ):
                 time.sleep(2.0) #wait until COM can be used without problem
                 subprocess.Popen(PYTHON + ' "' + RESETSCRIPT + '"').wait() #reset the clock if the build failed
