@@ -1,4 +1,3 @@
-
 import json
 import os
 import socket
@@ -25,10 +24,10 @@ def main():
             jsonData = json.loads(data)
             if( jsonData["build"]["status"] == "FAILED" ):
                 time.sleep(2.0) #wait until COM can be used without problem
-                subprocess.Popen(PYTHON + " " + RESETSCRIPT).wait() #reset the clock if the build failed
+                subprocess.Popen(PYTHON + ' "' + RESETSCRIPT + '"').wait() #reset the clock if the build failed
                 
             time.sleep(2.0) #wait until COM can be used without problem
-            subprocess.Popen(PYTHON + " " + SYNCSCRIPT).wait() #always sync, can't be done too often
+            subprocess.Popen(PYTHON + ' "' + SYNCSCRIPT + '"').wait() #always sync, can't be done too often
         except:
             print "ERROR"
             pass #cannot work with the data, let's just ignore it then...
