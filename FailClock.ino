@@ -13,21 +13,16 @@
   *       This is due to the attempt to make the code as small as possible (though readability is another important factor).
   * Note: After establishing a serial connection the Arduino will autoreset itself.
   *       The actual counter will be stored via EEPROM, so you do not have to worry about that.
-  *       However the 'seconds since midnight' need to be reset, else they'll fall back to 0.
   *
   *       It is possible to avoid the AutoReset:
   *         http://playground.arduino.cc/Main/DisablingAutoResetOnSerialConnection
   *       but I want to modify the Arduino as less as possible (making it easier to rebuild the project)
   *
   * Input:
-  * T012345
-  *   - Sets the amount of seconds gone by since midnight.
-  *     The code simply uses a second-counter to calc when the daycounter needs
-  *     to be increased. You will simply give the amount of seconds here
-  *     after you started the device.
-  *     Example: T86400 -> Last midnight was 24 hours ago (that makes no sense, yeah!)
-  *     Example: T00600 -> Last midnight is 10 minutes ago (that makes sense!)
-  *     Returns: Nothing (probably some debugging logs, just don't use the data programatically)
+  * I
+  *   - Increases the counter by 1
+  *     Example: T -> If the counter shows 1337 it will be increased to 1338
+  *     Returns: Nothing
   * R0123
   *   - Resets the counter to the given number
   *     Must be R + 4 digits long
@@ -46,10 +41,6 @@
 //variables
 Adafruit_7segment matrix = Adafruit_7segment(); //needed to access the display
 unsigned int counter = 0; //this is the current counter, that's what the display will show
-
-//the amount of seconds gone by since last update of the display
-//a long is needed because we're dealing with values up to 86400 seconds (1 day)
-unsigned long seconds = 0;
 
 void setup() {
   Serial.begin(9600);
@@ -74,14 +65,15 @@ void loop()
   if (Serial.available() > 0)
   {
     char input = Serial.read();
-    if(input == 'T')      //'T' means that the timer should be updated
-    {
-      updateTime(); 
-    }
-    else if(input == 'R') //'R' means that the display should be updated
+    if(input == 'R') //'R' means that the display should be updated
     {
       unsigned int lastValue = updateDisplay();
       Serial.println(lastValue, DEC); //answer with the previous counter (to let the caller keep a Highscore or whatever)
+    }
+    else if(input == 'I') //'I' means that the counter should be increased
+    {
+      increaseCounter();
+      displayNumber(counter);
     }
     else
     {
@@ -91,15 +83,6 @@ void loop()
         Serial.read();
       }
     }
-  }
-    
-  //check if it is midnight. If so, increase the counter
-  seconds++;
-  if( seconds >= 86400L)
-  {
-    increaseCounter();
-    displayNumber(counter);
-    seconds = 0;
   }
   
   //sleep for a second (let's give the arduino a break...)
@@ -170,21 +153,6 @@ unsigned int readEeprom()
   //form a 4 digit number from it again
   unsigned int readValue = (firstData * 100) + secondData;
   return readValue;
-}
-
-void updateTime()
-{
-  //This reads the 5 bytes from the Serial line and forms an unsigned long out of them
-  seconds = 0;
-  seconds = seconds + ( (unsigned long)charToNumber(Serial.read()) * 10000L);
-  seconds = seconds + ( (unsigned long)charToNumber(Serial.read()) * 1000L);
-  seconds = seconds + ( (unsigned long)charToNumber(Serial.read()) * 100L);
-  seconds = seconds + ( (unsigned long)charToNumber(Serial.read()) * 10L);
-  seconds = seconds + ( (unsigned long)charToNumber(Serial.read()) );
-  
-  //NOTE: Commented out because I do not want to send more data than needed
-  //Serial.print("Current Time: ");
-  //Serial.println( seconds );
 }
 
 unsigned int updateDisplay()

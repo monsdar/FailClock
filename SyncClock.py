@@ -17,7 +17,7 @@ def main():
     time.sleep(2.0)
     #Note: This assumes that the Arduino is connected to COM3. Usually
     #      this is the case when there aren't any other Serial-devices.
-    serialHandle = serial.Serial("COM4", 9600)
+    serialHandle = serial.Serial("COM3", 9600)
 
     #sync the timer
     #Note: Needs to be done because the serial connection resets the Arduino

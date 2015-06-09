@@ -7,11 +7,10 @@ def main():
     #      this is the case when there aren't any other Serial-devices.
     serialHandle = serial.Serial("COM5", 9600)
 
-    #reset the display
-    #Note: this returns the previous value, we're ignoring it for now
+    #increases the counter
     #Note: We need to sleep a bit before writing to the device
     time.sleep(2.0)
-    data = "R0000"
+    data = "I"
     serialHandle.write(data)
     print data
 
