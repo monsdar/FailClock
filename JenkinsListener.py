@@ -27,11 +27,11 @@ def main():
             jsonData = json.loads(data)
             if( jsonData["build"]["status"] == "FAILED" or
                 jsonData["build"]["status"] == "FAILURE" or 
-                jsonData["build"]["status"] == "UNSTABLE") ):
+                jsonData["build"]["status"] == "UNSTABLE" ):
                 time.sleep(2.0) #wait until COM can be used without problem
                 subprocess.Popen(PYTHON + ' "' + RESETSCRIPT + '"').wait() #reset the clock if the build failed
-            elif(   (jsonData["build"]["status"] == "SUCCESS" and
-                    jsonData["build"]["phase"] == "FINISHED"):
+            elif(jsonData["build"]["status"] == "SUCCESS" and
+                 jsonData["build"]["phase"] == "FINISHED"):
                 time.sleep(2.0) #wait until COM can be used without problem
                 subprocess.Popen(PYTHON + ' "' + INCSCRIPT + '"').wait() #increase the clock on success
                 
